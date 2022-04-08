@@ -26,11 +26,11 @@ class speechdata_action(data.Dataset):
             l=5
         a = self.path[index]
         frequency_sampling, audio_signal = wavfile.read(a)
-        feat=mfcc(audio_signal,frequency_sampling)
-        feat=util.pad(feat.T)
-        d_feat=delta(feat,3)
-        dd_feat=delta(d_feat,3)
-        x_s_d_dd = np.concatenate((feat,d_feat,dd_feat),axis=0)
+        feat=mfcc(audio_signal,frequency_sampling)    # MFCC extraction 
+        feat=util.pad(feat.T)    # padding is applied
+        d_feat=delta(feat,3)      # Delta coefficients calculation
+        dd_feat=delta(d_feat,3)   # Double Delta coefficients calculation
+        x_s_d_dd = np.concatenate((feat,d_feat,dd_feat),axis=0)  # concatinate static, delta, and double-delta coefficients
         return x_s_d_dd, l
     
     def __len__(self):
