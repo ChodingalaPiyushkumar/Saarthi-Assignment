@@ -29,7 +29,7 @@ from helpfiles import cnn_location as cnn_3
 from helpfiles import speechdata_action as sp_1
 from helpfiles import speechdata_object as sp_2
 from helpfiles import speechdata_location as sp_3
-
+# read the config files
 if len(sys.argv) < 0:
     print ("missing configuration file path")
 
@@ -40,9 +40,10 @@ test_csv_path=config['variables']['test_csv_path']
 device_path=config['variables']['device_path']
 model_load_path=config['variables']['model_save_path']
 
-
+# activate the GPU if available
 device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
 
+# Test data preparation for all tasks
 test_data_action = sp_1.speechdata_action(test_csv_path,device_path)
 testloader_action = torch.utils.data.DataLoader(test_data_action, batch_size=1,shuffle=False)
 
@@ -52,15 +53,16 @@ testloader_object = torch.utils.data.DataLoader(test_data_object, batch_size=1,s
 test_data_location = sp_3.speechdata_location(test_csv_path,device_path)
 testloader_location = torch.utils.data.DataLoader(test_data_location, batch_size=1,shuffle=False)
 
+# Load the CNN models
 action_model=config['models']['action_model']
 object_model=config['models']['object_model']
 location_model=config['models']['location_model']
-
+# Load the trained model path
 path_action=model_load_path + action_model
 path_object=model_load_path + object_model
 path_location=model_load_path + location_model
 
-
+# Loal the trained model for all tasks
 model_action = cnn_1.cnn_action().to(device)
 model_action.load_state_dict(torch.load(path_action))
 model_action.eval()
@@ -72,7 +74,7 @@ model_object.eval()
 model_location = cnn_1.cnn_action().to(device)
 model_location.load_state_dict(torch.load(path_location))
 model_location.eval()
-
+# testing scripts
 def test_action():
     model_action.eval()
     pred_action = []
@@ -117,10 +119,11 @@ def test_location():
         pred_location.append(predicted)
         lab_location.append(target) 
     return pred_location,lab_location
-
+# Begin the testing
 pred_action,lab_action=test_action()
 pred_object,lab_object=test_object()
 pred_location, lab_location= test_location()
+# Calculation of F1 scores
 F1_score_action=f1_score(lab_action,pred_action,average='macro')
 F1_score_object=f1_score(lab_object,pred_object,average='macro')
 F1_score_location=f1_score(lab_location,pred_location,average='macro')
