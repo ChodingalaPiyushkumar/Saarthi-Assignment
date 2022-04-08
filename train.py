@@ -29,8 +29,9 @@ from helpfiles import cnn_location as cnn_3
 from helpfiles import speechdata_action as sp_1
 from helpfiles import speechdata_object as sp_2
 from helpfiles import speechdata_location as sp_3
+# activate the GPU if available
 device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
-
+# Read config file
 if len(sys.argv) < 0:
     print ("missing configuration file path")
 
@@ -42,7 +43,7 @@ test_csv_path=config['variables']['valid_csv_path']
 device_path=config['variables']['device_path']
 
 
-
+# training data generation for all tasks
 train_data_action = sp_1.speechdata_action(train_csv_path,device_path)
 trainloader_action = torch.utils.data.DataLoader(train_data_action, batch_size=32,
                                           shuffle=True)
@@ -51,7 +52,8 @@ trainloader_object = torch.utils.data.DataLoader(train_data_object, batch_size=3
                                           shuffle=True)
 train_data_location = sp_3.speechdata_location(train_csv_path,device_path)
 trainloader_location = torch.utils.data.DataLoader(train_data_location, batch_size=32,
-                                          shuffle=True)   
+                                          shuffle=True) 
+# validation data generation for all tasks
 test_data_action = sp_1.speechdata_action(test_csv_path,device_path)
 testloader_action = torch.utils.data.DataLoader(test_data_action, batch_size=1,shuffle=False)
 
@@ -60,22 +62,23 @@ testloader_object = torch.utils.data.DataLoader(test_data_object, batch_size=1,s
 
 test_data_location = sp_3.speechdata_location(test_csv_path,device_path)
 testloader_location = torch.utils.data.DataLoader(test_data_location, batch_size=1,shuffle=False)
-
+# load the CNN models
 model_action = cnn_1.cnn_action().to(device)
 model_object = cnn_2.cnn_object().to(device)
 model_location = cnn_3.cnn_location().to(device)
-
+# activte the optimizer
 optimizer_action = util.get_optimizer(model_action, lr=0.001)
 optimizer_object = util.get_optimizer(model_object, lr=0.001)
 optimizer_location = util.get_optimizer(model_location, lr=0.001)
 
 criterion = nn.CrossEntropyLoss()
 curr_lr = 0.0001
+# load the model save path
 model_save_path=config['variables']['model_save_path']
 min_F1_action=0
 min_F1_object=0
 min_F1_location=0
-
+ # Start the training for 1 epoch
 for epoch in range(1,2):
     pred_action,lab_action=util.train_action(epoch,model_action,trainloader_action,criterion, testloader_action,optimizer_action)
     pred_object,lab_object=util.train_object(epoch,model_object,trainloader_object,criterion, testloader_object,optimizer_object)
