@@ -21,10 +21,10 @@ class speechdata_location(data.Dataset):
             l=3
         a = self.path[index]
         frequency_sampling, audio_signal = wavfile.read(a)
-        feat=mfcc(audio_signal,frequency_sampling)
-        feat=util.pad(feat.T)
-        d_feat=delta(feat,3)
-        dd_feat=delta(d_feat,3)
+        feat=mfcc(audio_signal,frequency_sampling)  # MFCC extraction
+        feat=util.pad(feat.T)  # Padding is done
+        d_feat=delta(feat,3)   # Delta coefficients calculation
+        dd_feat=delta(d_feat,3) # Double-delta coefficients calculation
         x_s_d_dd = np.concatenate((feat,d_feat,dd_feat),axis=0)
         return x_s_d_dd, l
     
