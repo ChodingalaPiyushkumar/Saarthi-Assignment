@@ -29,7 +29,6 @@ from helpfiles import cnn_location as cnn_3
 from helpfiles import speechdata_action as sp_1
 from helpfiles import speechdata_object as sp_2
 from helpfiles import speechdata_location as sp_3
-
 device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
 
 if len(sys.argv) < 0:
