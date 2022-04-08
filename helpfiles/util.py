@@ -24,7 +24,7 @@ from configparser import ConfigParser
 import sys
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
-
+# padding is done to make constant dimension of data
 def pad(S):
     if(S.shape[1]<400):    
         while(1):
@@ -38,7 +38,7 @@ def pad(S):
         S = np.array([list(x[0:400]) for x in S])
         
     return S
-
+# labels generation
 def generate_labels_fnames(file_description,device_path):
     df=pd.read_csv(file_description)
     path_initial=df["path"]
@@ -56,7 +56,7 @@ def generate_labels_fnames(file_description,device_path):
 def get_optimizer(model_name, lr):
     return optim.Adam(model_name.parameters(), lr=lr)
 
-
+# Training scripts
 def train_action(epoch,model_action,trainloader_action,criterion, testloader_action,optimizer_action):
     model_action.train()
     total_loss = 0.0
